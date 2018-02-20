@@ -1,0 +1,84 @@
+package com.example.aidan.thrivebiotechnologies;
+
+import android.os.AsyncTask;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.aidan.thrivebiotechnologies.NetworkInterface;
+
+public class MainActivity extends AppCompatActivity
+{
+
+    public Button connectButton;
+    public Button sendButton;
+    public EditText addressField;
+    public EditText messageField;
+    public static TextView recievedField;
+    final NetworkInterface net = new NetworkInterface();
+
+    public String address = "";
+    public String message = "";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_main);
+        // setContentView(R.layout.content_layout_id);
+
+        addressField = findViewById(R.id.addressField);
+        messageField = findViewById(R.id.messageField);
+
+        recievedField = findViewById(R.id.recievedField);
+        recievedField.setText("");
+
+        Button connectButton = (Button) findViewById(R.id.connectButton);
+        connectButton.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
+                //Log.i and Toast are giving us a message which will Tell us if we have the button actually connected
+                Log.i("MyApp", "Test Connect");
+                Toast.makeText(getApplicationContext(), "Test Connect", Toast.LENGTH_SHORT).show();
+                new ConnectAsyncTask().execute();
+            }
+        });
+
+        sendButton = findViewById(R.id.sendButton);
+        sendButton.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
+                Log.i("MyApp", "Test Send");
+                Toast.makeText(getApplicationContext(), "Test Send", Toast.LENGTH_SHORT).show();
+                new SendAsyncTask().execute();
+            }
+        });
+    }
+
+    private class ConnectAsyncTask extends AsyncTask<String, Void, String>
+    {
+        @Override
+        protected String doInBackground(String... strings) {
+            net.initConnection(addressField.getText().toString());
+            return null;
+        }
+    }
+
+    private class SendAsyncTask extends AsyncTask<String, Void, String>
+    {
+        @Override
+        protected String doInBackground(String... strings) {
+            net.sendMessage(messageField.getText().toString());
+            messageField.getText().clear();
+            return null;
+        }
+    }
+}
